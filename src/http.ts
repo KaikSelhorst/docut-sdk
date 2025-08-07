@@ -8,7 +8,7 @@ type HttpBaseUrl = string;
 /**
  * Type representing query parameters in an HTTP request.
  */
-type HttpQueryParams = Record<string, string>;
+type HttpQueryParams = object;
 
 /**
  * Type representing the initialization options for an HTTP request,
@@ -29,7 +29,7 @@ class HttpResponseHelper {
     try {
       const body = await res.json();
       return body;
-    } catch {
+    } catch (e) {
       return { message: null };
     }
   }
@@ -52,12 +52,23 @@ export class Http {
   ) {}
 
   /**
-   * Constructs the full URL by combining the base URL with a specific endpoint.
+   * Constructs the full URL by combining the base URL with a specific endpoint and optional query parameters.
    * @param endpoint The relative path of the endpoint.
-   * @returns The full URL.
+   * @param queryParams Optional query parameters to append to the URL.
+   * @returns The complete URL string with query parameters if provided.
    */
-  private mountURL(endpoint: string): string {
-    return `${this.baseURL}${endpoint}`;
+  private mountURL(endpoint: string, queryParams?: HttpQueryParams): string {
+    const query = this.mountQueryParams(queryParams || {});
+    return `${this.baseURL}${endpoint}${query}`;
+  }
+  /**
+   * Converts query parameters into a URL query string.
+   * @param queryParams The query parameters to serialize.
+   * @returns A query string starting with '?' or an empty string if no parameters are provided.
+   */
+  private mountQueryParams(queryParams: HttpQueryParams): string {
+    if (!Object.keys(queryParams).length) return '';
+    return `?${new URLSearchParams(queryParams as Record<string, string>).toString()}`;
   }
 
   /**
@@ -76,9 +87,9 @@ export class Http {
    * @returns A `Request` object ready for use in a fetch call.
    */
   private mountRequest(endpoint: string, init: HttpInit = {}): Request {
-    const { headers, ...restInit } = init;
+    const { headers, queryParams, ...restInit } = init;
 
-    const finalEndpoint = this.mountURL(endpoint);
+    const finalEndpoint = this.mountURL(endpoint, queryParams);
     const finalHeaders = this.mountRequestHeaders(headers);
 
     return new Request(finalEndpoint, { headers: finalHeaders, ...restInit });
