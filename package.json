@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "check-ts": "tsc --noEmit",
     "dev": "bun src/index.ts",
     "build": "rm -rf dist && tsc --build",
     "lint:fix": "biome check --write ./src/**/*",
