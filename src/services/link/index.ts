@@ -7,6 +7,8 @@ import type {
   DeleteLinkResponseSuccess,
   GetLinkRequest,
   GetLinkResponseSuccess,
+  GetPublicLinkRequest,
+  GetPublicLinkSuccess,
   ListLinkRequest,
   ListLinkResponseSuccess,
   UpdateLinkRequest,
@@ -47,6 +49,13 @@ export class LinkService {
   }
 
   public list(req?: ListLinkRequest) {
-    return this.http.request<ListLinkResponseSuccess, APIError>("/dashboard/link", {queryParams:req})
+    return this.http.request<ListLinkResponseSuccess, APIError>(
+      '/dashboard/link',
+      { queryParams: req }
+    );
+  }
+
+  public getPublic(req: GetPublicLinkRequest) {
+    return this.http.request<GetPublicLinkSuccess, APIError>(`/link/${req.id}`);
   }
 }

@@ -193,3 +193,24 @@ export interface ListLinkResponseSuccess {
    */
   total_pages: number;
 }
+
+/**
+ * Request to retrieve a public link by its ID.
+ */
+export interface GetPublicLinkRequest {
+  /**
+   * Unique ID of the public link to retrieve.
+   */
+  id: string;
+}
+
+/**
+ * Successful response when fetching a public link.
+ * Includes a subset of `Link` properties and associated SEO metadata.
+ */
+export interface GetPublicLinkResponseSuccess extends Pick<Link, 'id' | 'url'> {
+  /**
+   * SEO metadata associated with the public link, including title and description.
+   */
+  seo: Pick<Seo, 'description' | 'title'>;
+}
