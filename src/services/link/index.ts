@@ -7,6 +7,8 @@ import type {
   DeleteLinkResponseSuccess,
   GetLinkRequest,
   GetLinkResponseSuccess,
+  ListLinkRequest,
+  ListLinkResponseSuccess,
   UpdateLinkRequest,
   UpdateLinkResponseSuccess,
 } from './protocols';
@@ -42,5 +44,9 @@ export class LinkService {
       `/dashboard/link/${req.id}`,
       { method: 'DELETE' }
     );
+  }
+
+  public list(req?: ListLinkRequest) {
+    return this.http.request<ListLinkResponseSuccess, APIError>("/dashboard/link", {queryParams:req})
   }
 }

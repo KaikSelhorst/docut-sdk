@@ -125,3 +125,71 @@ export interface UpdateLinkResponseSuccess extends Link {
    */
   seo: Seo;
 }
+
+/**
+ * Request payload for listing links with optional filtering and sorting.
+ */
+export type ListLinkRequest = Partial<{
+  /**
+   * Field to sort the links by.
+   * Can be one of: 'clicks', 'url', 'expiration', 'created_at', or 'id'.
+   */
+  sort_by: 'clicks' | 'url' | 'expiration' | 'created_at' | 'id';
+
+  /**
+   * Direction of sorting.
+   * Can be 'asc' for ascending or 'desc' for descending.
+   */
+  sort_direction: 'asc' | 'desc';
+
+  /**
+   * Number of links to return per page.
+   */
+  per_page: number;
+
+  /**
+   * Unique ID of a specific link to filter by.
+   */
+  id: string;
+
+  /**
+   * Page number for pagination.
+   */
+  page: number;
+}>;
+
+/**
+ * Interface for a listed link, extending the base `Link` type with SEO metadata.
+ */
+interface LinkListed extends Link {
+  /**
+   * SEO metadata associated with the listed link, including title and description.
+   */
+  seo: Pick<Seo, 'title' | 'description'>;
+}
+
+/**
+ * Successful response when listing links.
+ * Contains an array of links and pagination metadata.
+ */
+export interface ListLinkResponseSuccess {
+  /**
+   * Array of links with their associated SEO metadata.
+   */
+  links: LinkListed[];
+
+  /**
+   * Total number of links matching the request criteria.
+   */
+  total: number;
+
+  /**
+   * Number of links returned per page.
+   */
+  per_page: number;
+
+  /**
+   * Total number of pages available based on the request criteria.
+   */
+  total_pages: number;
+}
