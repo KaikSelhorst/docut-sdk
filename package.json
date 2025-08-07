@@ -22,7 +22,8 @@
     "typescript"
   ],
   "files": [
-    "dist"
+    "dist",
+    "LICENSE"
   ],
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
