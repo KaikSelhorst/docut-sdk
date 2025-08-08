@@ -29,7 +29,7 @@ class HttpResponseHelper {
     try {
       const body = await res.json();
       return body;
-    } catch (e) {
+    } catch {
       return { message: null };
     }
   }
@@ -72,30 +72,6 @@ export class Http {
   }
 
   /**
-   * Merges default headers with any headers provided at request time.
-   * @param headers Optional headers for a specific request.
-   * @returns The merged headers object.
-   */
-  private mountRequestHeaders(headers?: HeadersInit): HeadersInit {
-    return Object.assign(this.headers, headers);
-  }
-
-  /**
-   * Constructs a `Request` object with the given endpoint and init options.
-   * @param endpoint The relative path of the endpoint.
-   * @param init Optional fetch init configuration.
-   * @returns A `Request` object ready for use in a fetch call.
-   */
-  private mountRequest(endpoint: string, init: HttpInit = {}): Request {
-    const { headers, queryParams, ...restInit } = init;
-
-    const finalEndpoint = this.mountURL(endpoint, queryParams);
-    const finalHeaders = this.mountRequestHeaders(headers);
-
-    return new Request(finalEndpoint, { headers: finalHeaders, ...restInit });
-  }
-
-  /**
    * Handles the response from a fetch request, extracting and returning typed success or error responses.
    * @param resPromise A promise that resolves to a fetch `Response` object.
    * @returns An object indicating whether the request was successful, with typed data or error.
@@ -123,9 +99,15 @@ export class Http {
    */
   public request<S, E>(
     endpoint: string,
-    init?: HttpInit
+    init: HttpInit = {}
   ): Promise<{ success: true; data: S } | { success: false; error: E }> {
-    const request = this.mountRequest(endpoint, init);
-    return this.handleResponse<S, E>(fetch(request));
+    const { headers, queryParams, ...rest } = init;
+
+    return this.handleResponse<S, E>(
+      fetch(this.mountURL(endpoint, queryParams), {
+        headers: { ...this.headers, ...headers },
+        ...rest,
+      })
+    );
   }
 }
