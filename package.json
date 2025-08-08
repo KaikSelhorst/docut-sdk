@@ -2,7 +2,7 @@
   "name": "@docut/nodejs-sdk",
   "description": "Docut SDK",
   "module": "src/index.ts",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "private": false,
   "scripts": {
