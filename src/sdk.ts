@@ -1,5 +1,5 @@
-import { Http } from "./http";
-import { LinkService } from "./services/link";
+import { Http } from './http';
+import { LinkService } from './services/link';
 
 /**
  * Main SDK class to interact with the Docut API.
@@ -30,7 +30,7 @@ export class DocutSDK {
    * @param apiKey The API key used for authentication (sent as `x-api-key` header)
    */
   constructor(baseURL: string, apiKey: string) {
-    this.http = new Http(baseURL, { "x-api-key": apiKey });
+    this.http = new Http(baseURL, { 'x-api-key': apiKey });
     this.link = new LinkService(this.http);
   }
 }

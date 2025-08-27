@@ -1,4 +1,4 @@
-import type { HeadersInit } from "bun";
+import type { HeadersInit } from 'bun';
 
 /**
  * Type representing the base URL for the HTTP client.
@@ -26,8 +26,8 @@ class HttpResponseHelper {
    * @returns The parsed JSON body or a fallback object.
    */
   public async extractBody(res: Response) {
-    const contentType = res.headers.get("content-type");
-    if (!contentType?.includes("application/json")) {
+    const contentType = res.headers.get('content-type');
+    if (!contentType?.includes('application/json')) {
       return { message: null };
     }
 
@@ -53,9 +53,9 @@ export class Http {
    */
   constructor(
     private readonly baseURL: HttpBaseUrl,
-    headers: HeadersInit = {},
+    headers: HeadersInit = {}
   ) {
-    // Pre-processa headers uma única vez
+    // Preprocess the headers only once
     this.baseHeaders = new Headers(headers);
   }
 
@@ -94,11 +94,9 @@ export class Http {
    * @returns An object indicating whether the request was successful, with typed data or error.
    */
   private async handleResponse<S, E>(
-    resPromise: Promise<Response>,
+    resPromise: Promise<Response>
   ): Promise<{ success: true; data: S } | { success: false; error: E }> {
     const res = await resPromise;
-
-    // Extrai o body apenas uma vez
     const body = await this.responseHelper.extractBody(res);
 
     return res.ok
@@ -116,7 +114,7 @@ export class Http {
    */
   public request<S, E>(
     endpoint: string,
-    init: HttpInit = {},
+    init: HttpInit = {}
   ): Promise<{ success: true; data: S } | { success: false; error: E }> {
     const url = this.buildURL(endpoint, init.queryParams);
 
@@ -129,7 +127,7 @@ export class Http {
     }
 
     const requestInit: RequestInit = {
-      method: init.method || "GET",
+      method: init.method || 'GET',
       headers: requestHeaders,
       body: init.body,
       mode: init.mode,
