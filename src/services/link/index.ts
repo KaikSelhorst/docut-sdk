@@ -1,5 +1,5 @@
-import type { Http } from '../../http';
-import type { APIError } from '../types';
+import type { Http } from "../../http";
+import type { APIError } from "../types";
 import type {
   CreateLinkResponseSuccess,
   CreatelinkRequest,
@@ -8,26 +8,26 @@ import type {
   GetLinkRequest,
   GetLinkResponseSuccess,
   GetPublicLinkRequest,
-  GetPublicLinkSuccess,
+  GetPublicLinkResponseSuccess,
   ListLinkRequest,
   ListLinkResponseSuccess,
   UpdateLinkRequest,
   UpdateLinkResponseSuccess,
-} from './protocols';
+} from "./protocols";
 
 export class LinkService {
   constructor(private readonly http: Http) {}
 
   public create(req: CreatelinkRequest) {
     return this.http.request<CreateLinkResponseSuccess, APIError>(
-      '/dashboard/link',
-      { body: JSON.stringify(req), method: 'POST' }
+      "/dashboard/link",
+      { body: JSON.stringify(req), method: "POST" },
     );
   }
 
   public get(req: GetLinkRequest) {
     return this.http.request<GetLinkResponseSuccess, APIError>(
-      `/dashboard/link/${req.id}`
+      `/dashboard/link/${req.id}`,
     );
   }
 
@@ -36,26 +36,28 @@ export class LinkService {
       `/dashboard/link/${req.id}`,
       {
         body: JSON.stringify(req),
-        method: 'PUT',
-      }
+        method: "PUT",
+      },
     );
   }
 
   public delete(req: DeleteLinkRequest) {
     return this.http.request<DeleteLinkResponseSuccess, APIError>(
       `/dashboard/link/${req.id}`,
-      { method: 'DELETE' }
+      { method: "DELETE" },
     );
   }
 
   public list(req?: ListLinkRequest) {
     return this.http.request<ListLinkResponseSuccess, APIError>(
-      '/dashboard/link',
-      { queryParams: req }
+      "/dashboard/link",
+      { queryParams: req },
     );
   }
 
   public getPublic(req: GetPublicLinkRequest) {
-    return this.http.request<GetPublicLinkSuccess, APIError>(`/link/${req.id}`);
+    return this.http.request<GetPublicLinkResponseSuccess, APIError>(
+      `/link/${req.id}`,
+    );
   }
 }

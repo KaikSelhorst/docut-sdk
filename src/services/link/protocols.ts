@@ -1,4 +1,4 @@
-import type { Link, Seo } from '../types';
+import type { Link, Seo } from "../types";
 
 /**
  * Request payload for creating a new link.
@@ -134,13 +134,13 @@ export type ListLinkRequest = Partial<{
    * Field to sort the links by.
    * Can be one of: 'clicks', 'url', 'expiration', 'created_at', or 'id'.
    */
-  sort_by: 'clicks' | 'url' | 'expiration' | 'created_at' | 'id';
+  sort_by: "clicks" | "url" | "expiration" | "created_at" | "id";
 
   /**
    * Direction of sorting.
    * Can be 'asc' for ascending or 'desc' for descending.
    */
-  sort_direction: 'asc' | 'desc';
+  sort_direction: "asc" | "desc";
 
   /**
    * Number of links to return per page.
@@ -165,7 +165,7 @@ interface LinkListed extends Link {
   /**
    * SEO metadata associated with the listed link, including title and description.
    */
-  seo: Pick<Seo, 'title' | 'description'>;
+  seo: Pick<Seo, "title" | "description">;
 }
 
 /**
@@ -208,9 +208,9 @@ export interface GetPublicLinkRequest {
  * Successful response when fetching a public link.
  * Includes a subset of `Link` properties and associated SEO metadata.
  */
-export interface GetPublicLinkResponseSuccess extends Pick<Link, 'id' | 'url'> {
+export interface GetPublicLinkResponseSuccess extends Pick<Link, "id" | "url"> {
   /**
    * SEO metadata associated with the public link, including title and description.
    */
-  seo: Pick<Seo, 'description' | 'title'>;
+  seo: Pick<Seo, "description" | "title">;
 }
