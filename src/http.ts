@@ -26,9 +26,13 @@ class HttpResponseHelper {
    * @returns The parsed JSON body or a fallback object.
    */
   public async extractBody(res: Response) {
+    const contentType = res.headers.get('content-type');
+    if (!contentType?.includes('application/json')) {
+      return { message: null };
+    }
+
     try {
-      const body = await res.json();
-      return body;
+      return await res.json();
     } catch {
       return { message: null };
     }
@@ -40,6 +44,7 @@ class HttpResponseHelper {
  */
 export class Http {
   private responseHelper = new HttpResponseHelper();
+  private baseHeaders: Headers;
 
   /**
    * Constructs an instance of the `Http` class.
@@ -48,27 +53,39 @@ export class Http {
    */
   constructor(
     private readonly baseURL: HttpBaseUrl,
-    private readonly headers: HeadersInit = new Headers()
-  ) {}
+    headers: HeadersInit = {}
+  ) {
+    // Preprocess the headers only once
+    this.baseHeaders = new Headers(headers);
+  }
 
   /**
    * Constructs the full URL by combining the base URL with a specific endpoint and optional query parameters.
+   * Optimized version that avoids unnecessary processing when no query parameters are provided.
    * @param endpoint The relative path of the endpoint.
    * @param queryParams Optional query parameters to append to the URL.
    * @returns The complete URL string with query parameters if provided.
    */
-  private mountURL(endpoint: string, queryParams?: HttpQueryParams): string {
-    const query = this.mountQueryParams(queryParams || {});
-    return `${this.baseURL}${endpoint}${query}`;
-  }
-  /**
-   * Converts query parameters into a URL query string.
-   * @param queryParams The query parameters to serialize.
-   * @returns A query string starting with '?' or an empty string if no parameters are provided.
-   */
-  private mountQueryParams(queryParams: HttpQueryParams): string {
-    if (!Object.keys(queryParams).length) return '';
-    return `?${new URLSearchParams(queryParams as Record<string, string>).toString()}`;
+  private buildURL(endpoint: string, queryParams?: HttpQueryParams): string {
+    if (!queryParams) {
+      return `${this.baseURL}${endpoint}`;
+    }
+
+    const params = queryParams as Record<string, string>;
+
+    const searchParams = new URLSearchParams();
+    let hasParams = false;
+
+    for (const key in params) {
+      if (params.hasOwnProperty(key) && params[key] != null) {
+        searchParams.append(key, String(params[key]));
+        hasParams = true;
+      }
+    }
+
+    return hasParams
+      ? `${this.baseURL}${endpoint}?${searchParams.toString()}`
+      : `${this.baseURL}${endpoint}`;
   }
 
   /**
@@ -82,11 +99,9 @@ export class Http {
     const res = await resPromise;
     const body = await this.responseHelper.extractBody(res);
 
-    if (res.ok) {
-      return { success: true, data: body as S } as const;
-    }
-
-    return { success: false, error: body as E } as const;
+    return res.ok
+      ? { success: true, data: body as S }
+      : { success: false, error: body as E };
   }
 
   /**
@@ -101,13 +116,31 @@ export class Http {
     endpoint: string,
     init: HttpInit = {}
   ): Promise<{ success: true; data: S } | { success: false; error: E }> {
-    const { headers, queryParams, ...rest } = init;
+    const url = this.buildURL(endpoint, init.queryParams);
 
-    return this.handleResponse<S, E>(
-      fetch(this.mountURL(endpoint, queryParams), {
-        headers: { ...this.headers, ...headers },
-        ...rest,
-      })
-    );
+    const requestHeaders = new Headers(this.baseHeaders);
+    if (init.headers) {
+      const additionalHeaders = new Headers(init.headers);
+      for (const [key, value] of additionalHeaders.entries()) {
+        requestHeaders.set(key, value);
+      }
+    }
+
+    const requestInit: RequestInit = {
+      method: init.method || 'GET',
+      headers: requestHeaders,
+      body: init.body,
+      mode: init.mode,
+      credentials: init.credentials,
+      cache: init.cache,
+      redirect: init.redirect,
+      referrer: init.referrer,
+      referrerPolicy: init.referrerPolicy,
+      integrity: init.integrity,
+      keepalive: init.keepalive,
+      signal: init.signal,
+    };
+
+    return this.handleResponse<S, E>(fetch(url, requestInit));
   }
 }

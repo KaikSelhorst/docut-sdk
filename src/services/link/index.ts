@@ -8,7 +8,7 @@ import type {
   GetLinkRequest,
   GetLinkResponseSuccess,
   GetPublicLinkRequest,
-  GetPublicLinkSuccess,
+  GetPublicLinkResponseSuccess,
   ListLinkRequest,
   ListLinkResponseSuccess,
   UpdateLinkRequest,
@@ -56,6 +56,8 @@ export class LinkService {
   }
 
   public getPublic(req: GetPublicLinkRequest) {
-    return this.http.request<GetPublicLinkSuccess, APIError>(`/link/${req.id}`);
+    return this.http.request<GetPublicLinkResponseSuccess, APIError>(
+      `/link/${req.id}`
+    );
   }
 }
