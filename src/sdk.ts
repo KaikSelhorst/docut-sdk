@@ -1,4 +1,5 @@
 import { Http } from './http';
+import { AnalyticService } from './services/analytic';
 import { LinkService } from './services/link';
 
 /**
@@ -18,10 +19,8 @@ export class DocutSDK {
    */
   private http: Http;
 
-  /**
-   * Service for link-related operations.
-   */
   public link: LinkService;
+  public analytic: AnalyticService;
 
   /**
    * Creates a new instance of the Docut SDK.
@@ -32,5 +31,6 @@ export class DocutSDK {
   constructor(baseURL: string, apiKey: string) {
     this.http = new Http(baseURL, { 'x-api-key': apiKey });
     this.link = new LinkService(this.http);
+    this.analytic = new AnalyticService(this.http);
   }
 }
